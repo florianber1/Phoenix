@@ -126,6 +126,7 @@ jobs:
     outputs:
       short_name: ${{ steps.init.outputs.short_name }}
       canonical_id: ${{ steps.init.outputs.canonical_id }}
+      version_trimmed: ${{ steps.init.outputs.version_trimmed}}
 
     steps:
       - name: initialize variables
@@ -148,6 +149,12 @@ jobs:
           echo "canonical_id=$short_name-py${{ matrix.python-version }}-${{ matrix.architecture}}" >> "$GITHUB_OUTPUT"
           echo "build_opts=$build_opts" >> "$GITHUB_OUTPUT"
 
+      - name: trim 't' of free threaded python version
+        id: trim_python_version
+        run: |
+          trimmed_ver=$(echo "${{ matrix.python-version }}" | sed 's/t//g')
+          echo "version_trimmed=$trimmed_ver" >> "$GITHUB_OUTPUT"
+
       - name: Checkout repo
         uses: actions/checkout@v4
         with:
@@ -159,12 +166,23 @@ jobs:
           name: wxPython-source
           path: dist
 
-      - name: Set up Python ${{ matrix.python-version }}-${{ matrix.architecture }}
+      - name: Set up Python ${{ matrix.python-version }}-${{ matrix.architecture }} with setup-python
+        id: python_setup_default
+        continue-on-error: true
         uses: actions/setup-python@v5
         with:
           python-version: '${{ matrix.python-version }}'
           architecture: '${{ matrix.architecture }}'
           cache: 'pip'
+
+      - name: Set up Python ${{ matrix.python-version }}-${{ matrix.architecture }} with deadsnakes (fallback for free threaded)
+        id: python_setup_deadsnakes
+        uses: deadsnakes/action@v3.2.0
+        if: steps.python_setup_default.outcome != success()
+        with:
+           python-version: ${{ steps.init.outputs.version_trimmed }}
+           # debug: true  # Optional, to select a Python debug build
+           nogil: true  # Optional, to select a free-threaded Python build (3.13+ only)
 
       - name: Install Python dependencies
         run: |
