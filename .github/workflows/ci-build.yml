@@ -158,6 +158,11 @@ jobs:
           trimmed_ver=$(echo "${{ matrix.python-version }}" | sed 's/t//g')
           echo "version_trimmed=$trimmed_ver" >> "$GITHUB_OUTPUT"
 
+      - name: check trimmed-version-value
+        run: |
+          echo "---TRIMMED-Version---"
+          echo "Value= ${{ steps.trim_python_version.outputs.version_trimmed}}"
+
       - name: Checkout repo
         uses: actions/checkout@v4
         with:
@@ -183,7 +188,7 @@ jobs:
         uses: deadsnakes/action@v3.2.0
         if: steps.python_setup_default.outcome != success()
         with:
-           python-version: ${{ steps.init.outputs.version_trimmed }}
+           python-version: ${{ steps.trim_python_version.outputs.version_trimmed }}
            # debug: true  # Optional, to select a Python debug build
            nogil: true  # Optional, to select a free-threaded Python build (3.13+ only)
 
