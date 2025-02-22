@@ -129,7 +129,7 @@ jobs:
     outputs:
       short_name: ${{ steps.init.outputs.short_name }}
       canonical_id: ${{ steps.init.outputs.canonical_id }}
-      version_trimmed: ${{ steps.init.outputs.version_trimmed}}
+      version_trimmed: ${{ steps.trim_python_version.outputs.version_trimmed}}
 
     steps:
       - name: initialize variables
