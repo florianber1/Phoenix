@@ -104,8 +104,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ ubuntu-22.04, windows-2022, macos-13 ]
-        python-version: [ '3.9', '3.10', '3.11', '3.12', '3.13' ]
+        # build just 3.13 including exp-free-threading
+        # but just on linux. 3.13t is not available from action.setup-python yet 
+        # and action.deadsnakes is only supported on linux
+        os: [ ubuntu-22.04 ]  # [ ubuntu-22.04, windows-2022, macos-13 ]
+        python-version: [ 3.13, 3.13t ] #[ '3.9', '3.10', '3.11', '3.12', '3.13' ]
         architecture: [ 'x86', 'x64' ]
         # Exclude x86 configs on non-Windows OSs
         exclude:

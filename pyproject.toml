@@ -69,10 +69,13 @@ Repository = "https://github.com/wxWidgets/Phoenix.git"
 Issues = "https://github.com/wxWidgets/Phoenix/issues"
 Discuss = "https://discuss.wxpython.org/"
 
+
+# cython was 3.0.10 -> 3.0.12, and 3.1.x together with language level 3 
+# should fix the invalid name issue of __pyx_vectorcallfunc in cythonized nanosvg.c
 [build-system]
 requires = [
     "setuptools>=70.1",
-    "cython == 3.0.10",
+    "cython >= 3.0.12", 
     "requests >= 2.26.0",
     "sip == 6.10.0",
 ]
